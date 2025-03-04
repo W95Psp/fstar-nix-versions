@@ -1,0 +1,39 @@
+name: Build every F* version
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+     - name: Checkout to repository
+       uses: actions/checkout@v3
+     - name: Set matrix data
+       id: set-matrix
+       run: |
+         echo "matrix=$(jq -c '{include: [.[] | select(.broken? | not) | {version: .version, name: .name}]}' < ./versions.json)" >> $GITHUB_OUTPUT
+
+  build-fstar:
+    runs-on: "ubuntu-latest"
+    needs: configure
+    strategy:
+      matrix: ${{ fromJson(needs.configure.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v12
+        with:
+          name: fstar-nix-versions
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - run: |
+          VERSION=${{ matrix.name }}
+          echo "VERSION=$VERSION"
+          VERSION="${VERSION//./_}"
+          echo "VERSION=$VERSION"
+          nix build .#"fstar_$VERSION"
