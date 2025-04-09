@@ -1,0 +1,31 @@
+name: Try to add new F* versions
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: create pull request
+        run: |
+          BRANCH=$(date +'update-%Y-%m-%d-%s')
+          bash update.sh
+          git diff --quiet || {
+            git config --global user.email "you@example.com"
+            git config --global user.name "Bot"
+            
+            git checkout -b "$BRANCH"
+            git add versions.json
+            git commit -m "add new fstar"
+            
+            git push --set-upstream origin "$BRANCH"
+            
+            gh pr create -B main -H "$BRANCH" --title "Add new F*" --body 'Created by Github action'
+          }
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
