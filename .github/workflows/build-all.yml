@@ -25,6 +25,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         fstar: ${{ fromJson(needs.configure.outputs.matrix).include }}
+        # Some version of F* cannot be built under MacOS, skip them.
+        exclude:
+        - os: macos-latest
+          fstar:
+            name: v2025_06_13
+        - os: macos-latest
+          fstar:
+            name: v2025_06_20
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
