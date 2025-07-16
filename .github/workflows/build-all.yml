@@ -47,3 +47,11 @@ jobs:
           VERSION="${VERSION//./_}"
           echo "VERSION=$VERSION"
           nix build .#"fstar_$VERSION"
+
+  matrix-status:
+    needs: build-fstar
+    runs-on: ubuntu-latest
+    if: success()  # Only runs if all matrix jobs pass
+    steps:
+      - name: Confirm matrix success
+        run: echo "All matrix builds succeeded."
