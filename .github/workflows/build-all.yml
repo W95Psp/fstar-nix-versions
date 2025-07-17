@@ -18,13 +18,14 @@ jobs:
         run: |
           echo "matrix=$(jq -c '{include: [.[] | select(.broken? | not) | {version: .version, name: .name}]}' < ./versions.json)" >> $GITHUB_OUTPUT
 
-  build-fstar:
+  build:
     needs: configure
+    name: F* ${{ matrix.fstar.version }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
         fstar: ${{ fromJson(needs.configure.outputs.matrix).include }}
+        os: [ubuntu-latest, macos-latest]
         # Some version of F* cannot be built under MacOS, skip them.
         exclude:
         - os: macos-latest
@@ -49,7 +50,7 @@ jobs:
           nix build .#"fstar_$VERSION"
 
   matrix-status:
-    needs: build-fstar
+    needs: build
     runs-on: ubuntu-latest
     if: success()  # Only runs if all matrix jobs pass
     steps:
