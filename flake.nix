@@ -8,6 +8,7 @@ fstar_v2025_06_13.url = "github:fstarlang/fstar/v2025.06.13";
 fstar_v2025_06_20.url = "github:fstarlang/fstar/v2025.06.20";
 fstar_v2025_08_07.url = "github:fstarlang/fstar/v2025.08.07";
 fstar_v2025_09_04.url = "github:fstarlang/fstar/v2025.09.04";
+fstar_v2025_10_06.url = "github:fstarlang/fstar/v2025.10.06";
 };
 outputs = { flake-utils, nixpkgs, ... }@inputs:
 flake-utils.lib.eachDefaultSystem (system:
@@ -21,6 +22,7 @@ fstar_v2025_06_13 = inputs.fstar_v2025_06_13.packages.${system}.default;
 fstar_v2025_06_20 = inputs.fstar_v2025_06_20.packages.${system}.default;
 fstar_v2025_08_07 = inputs.fstar_v2025_08_07.packages.${system}.default;
 fstar_v2025_09_04 = inputs.fstar_v2025_09_04.packages.${system}.default;
+fstar_v2025_10_06 = inputs.fstar_v2025_10_06.packages.${system}.default;
 }; }
 );
 }
